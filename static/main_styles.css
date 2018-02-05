@@ -1,0 +1,244 @@
+/* Sets overall styles valid for all tags:
+   1. the default font of the website to a google font because
+      it looks cool. As a fallback generic fonts are listed
+   2. Sets the box definition to include the border only so  that
+      width and height attributes include the border an shrinks
+      the content
+*/
+
+/*NEW STYLING */
+
+/* source bootstrap */
+.index_view {
+    background: url("obstkorb.jpg")no-repeat center center;
+    background-size: cover;
+}
+
+/*OLD STYLING */
+
+/* disabled
+/header, nav, footer, section, article, div {
+  box-sizing: border-box;
+  display: block;
+}
+
+@media screen and (min-width:1000px) {
+  body {
+    margin:auto;
+  }
+}
+
+@media screen and (min-width:480px) {
+  .welcome {
+    height: 300px;
+  }
+
+  .welcome_div {
+    padding:1em;
+  }
+}
+
+*/
+
+.main_page_body {
+  font-family: 'Architects Daughter',Verdana, Times, serif;
+  font-size: 14px;
+  color: rgb(53,127,111);
+  width: 100%;
+  max-width: 930px;
+  border: 0px;
+  padding: 4px;
+  margin: 0px;
+}
+
+.index_view {
+    background: url("static/Others/img (50).jpg")no-repeat center center;
+    background-size: cover;
+}
+
+
+
+
+.logo {
+  width: 120px;
+  float:left;
+}
+
+
+/* ++++++++++ HEADER ++++++++++*/
+
+.header {
+  /* height: 60px; */
+}
+
+.header H1 {
+  text-align: left;
+  font-size: 35px;
+  font-weight: lighter;
+  margin:0px;
+}
+
+.header p {
+  text-align:right;
+  font-size: 15px;
+  margin-top: 2px;
+  margin-bottom: 0px;
+}
+
+.header_line {
+  background-color: rgb(88,78,36);
+  height: 4px;
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+/* ++++++++++ WELCOME SECTION ++++++++++*/
+
+.welcome {
+  position: relative; /* Necessary so that childs (article) can use position:absolute in reference to the parent */
+  background-image: url(obstkorb.jpg);
+  background-size: cover;
+  height: 200px;
+}
+
+.welcome_div {
+  background-color: rgba(0,0,0,0.7);
+  position: absolute;   /* enables the element the be placed on absolute position to the parent -> see position: relative of parent */
+  bottom:0;             /* places article on the bottom of the parent element */
+  /*height: 40%; Disabled to allow clearfix overflow:auto on the welcome_text to increase the height of parent if necessary*/
+  width: 100%;
+  color:#fff;
+  padding:2px;
+}
+
+
+
+.welcome_text {
+  overflow: auto;
+}
+
+.welcome h2 {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  font-weight: lighter;
+}
+
+/* ++++++++++ CONTENT SECTION ++++++++++*/
+
+.flex_container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.content {
+    font-weight: lighter;
+}
+
+/* ++++++ Day Items +++++ */
+.day_item {
+  float:left; /* Important so that elements respect each other */
+  display:inline-block; /*Should avoid stacking of block items */
+  width: 120px;
+  height: 300px;
+  margin:5px;
+  padding:8px;
+  background-color: rgb(190,200,190);
+  border-radius: 8px;
+}
+
+.day_item div {
+  width: 80px;
+  height: 70px;
+  margin: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:10px;
+  margin-bottom:10px;
+  padding: 2px;
+  background-color: white;
+}
+
+.day_item h3 {
+  font-family: Verdana;
+  text-align: center;
+  margin:0px;
+}
+
+
+/* +++++++ Meal Items +++++ */
+.meal {
+  float:left; /* Important so that elements respect each other */
+  display:inline-block; /*Should avoid stacking of block items */
+  width: 300px;
+  /*height: 240px;*/
+  margin-right: 5px;
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-bottom: 10px;
+  padding:0px;
+  background-color: rgb(235,235,235);
+  border-radius: 8px;
+}
+
+.image_box {
+  float:left;
+  width: 100%;
+  height: 180px;
+  margin: 0px;
+  margin: 0px;
+  padding: 0px;
+  overflow:hidden;
+  border-radius: 8px;
+}
+
+.meal_footer_link {
+  color: rgb(80,80,80);
+}
+
+.meal img {
+  width: 100%;
+}
+
+.meal h3 {
+  text-align: center;
+  margin:5px;
+  font-size: 20px;
+  color: rgb(50,50,50);
+}
+
+.ingredients {
+  vertical-align: top;
+  align: center;
+  font-size: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ingredients td {
+  color: rgb(50,50,50);
+}
+
+.quantity {
+  text-align: right;
+  font-weight: bold;
+}
+
+.food {
+  color: rgb(119,22,26);
+}
+
+.meal_add {
+  color: rgb(0,0,0);
+  font-size: 40px;
+}
+
+.footer {
+  position: fixed;
+  display: block;
+  right: 0;
+  bottom: 0;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  z-index: 900;
+}

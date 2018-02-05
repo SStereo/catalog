@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+
+{% block style %}
+<style>
+
+  /* Styles for the shopping list form */
+
+  .card {
+    width: 250px;
+    height: 60px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .main-table-categories {
+    width: 40%;
+    vertical-align: top;
+  }
+
+  .main-table-latestitems {
+    width: 60%;
+    vertical-align: top;
+  }
+
+  .main-table {
+    vertical-align: top;
+    margin: 5px;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <div style="height: 80px"></div>
+
+  </div>
+
+  <table class="main-table">
+    <tr>
+      <th><h2>Category</h2></th>
+      <th><h2>{{ category.name }} Items ({{ items | count }} items)</h2></th>
+    </tr>
+    <tr>
+      <td class="main-table-categories">
+        <section>
+                <div class="card card-body">
+                  <h5 class="card-title">{{ category.name }}</h5>
+                </div>
+        </section>
+      </td>
+      <td class="main-table-latestitems">
+        <section>
+          <ul class="list-group">
+          {% for i in items %}
+
+              <li class="list-group-item"><a href="{{ url_for('showItem', category=i.category.name, item=i.name) }}">{{ i.name }}</a> ({{ i.category.name }})</li>
+
+          {% endfor %}
+          </ul>
+        </section>
+      </td>
+    </tr>
+  </table>
+<div style="height: 68px">
+
+</div>
+
+
+
+
+</main>
+{% endblock %}

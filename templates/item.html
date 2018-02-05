@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+
+
+{% block style %}
+<style>
+
+  /* Styles for the shopping list form */
+
+  .card {
+    width: 350px;
+    height: 60px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card.card-cascade {
+    width: 350px;
+  }
+
+  .view {
+    width: 350px;
+  }
+
+  .main-table-categories {
+    width: 40%;
+    vertical-align: top;
+  }
+
+  .main-table-latestitems {
+    width: 60%;
+    vertical-align: top;
+  }
+
+  .main-table {
+    vertical-align: top;
+    margin: 5px;
+  }
+
+  .img-fluid {
+    width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <div style="height: 80px"></div>
+
+  </div>
+
+  <table class="main-table">
+    <tr>
+      <th><h2>Category</h2></th>
+      <th><h2>Item</h2></th>
+    </tr>
+    <tr>
+      <td class="main-table-categories">
+        <section>
+                <div class="card card-body">
+                  <h5 class="card-title">{{ category.name }}</h5>
+                </div>
+        </section>
+      </td>
+      <td class="main-table-latestitems">
+        <section>
+          <!--Card-->
+            <div class="card card-cascade wider">
+
+                <!--Card image-->
+                <div class="view overlay hm-white-slight">
+                    <img src="{{ item.image }}" class="img-fluid" alt="">
+                    <a>
+                        <div class="mask"></div>
+                    </a>
+                </div>
+                <!--Card image-->
+
+                <!--Card content-->
+                <div class="card-body text-center no-padding">
+                    <!--Category & Title-->
+                    <a href="" class="text-muted">
+                        <h5>{{ category.name }}</h5>
+                    </a>
+                    <h4 class="card-title">
+                        <strong>
+                            {{ item.name }}
+                        </strong>
+                    </h4>
+
+                    <!--Description-->
+                    <p class="card-text">{{ item.description }}</p>
+
+                    <!--Card footer-->
+                    <div class="card-footer">
+                        <span class="left font-bold">
+                            <strong>{{ item.price }}$</strong>
+                        </span>
+                        <span class="right">
+                            <a class="" data-toggle="tooltip" data-placement="top" title="Quick Look">
+                                <i class="fa fa-eye grey-text"></i>
+                            </a>
+                            <a class="" data-toggle="tooltip" data-placement="top" title="Add to Wishlist">
+                                <i class="fa fa-heart grey-text"></i>
+                            </a>
+                        </span>
+                    </div>
+
+                </div>
+                <!--Card content-->
+
+            </div>
+            <!--Card-->
+        </section>
+      </td>
+    </tr>
+  </table>
+<div style="height: 68px">
+
+</div>
+
+
+
+
+</main>
+{% endblock %}

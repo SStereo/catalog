@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Test App</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- STATIC folder version -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/mdb.min.css') }}" rel="stylesheet">
+
+
+    {% block style %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+  <!--Main Navigation-->
+<header>
+
+    <nav class="navbar fixed-top navbar-expand-lg elegant-color-dark scrolling-navbar">
+        <a class="navbar-brand white-text" href="#"><strong>Catalog App</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link white-text" href="{{ url_for('homepage') }}">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link white-text" href="{{ url_for('showLogin')}}">Login</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav nav-flex-icons">
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fa fa-instagram"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+</header>
+
+{% block body %}
+{% endblock %}
+<!--Main Navigation-->
+
+  <script type=text/javascript src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+  <script type=text/javascript src="{{ url_for('static', filename='js/popper.js') }}"></script>
+  <script type=text/javascript src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  <script type=text/javascript src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
+
+
+
+
+</body>
+
+</html>
