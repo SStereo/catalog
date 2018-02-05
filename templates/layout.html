@@ -23,7 +23,6 @@
 
   <!--Main Navigation-->
 <header>
-
     <nav class="navbar fixed-top navbar-expand-lg elegant-color-dark scrolling-navbar">
         <a class="navbar-brand white-text" href="#"><strong>Catalog App</strong></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,6 +55,8 @@
 
 {% block body %}
 {% endblock %}
+
+
 <!--Main Navigation-->
 
   <script type=text/javascript src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
@@ -63,7 +64,8 @@
   <script type=text/javascript src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
   <script type=text/javascript src="{{ url_for('static', filename='js/mdb.min.js') }}"></script>
 
-
+  {% block script %}
+  {% endblock %}
 
 
 </body>

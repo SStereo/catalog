@@ -42,7 +42,7 @@
   <table class="main-table">
     <tr>
       <th><h2>Category</h2></th>
-      <th><h2>{{ category.name }} Items ({{ items | count }} items)</h2></th>
+      <th><h2>{{ items | count }} items</h2></th>
     </tr>
     <tr>
       <td class="main-table-categories">
@@ -62,6 +62,8 @@
           {% endfor %}
           </ul>
         </section>
+        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+        <a href="{{ url_for('showAddItem') }}"><button type="button" class="btn btn-primary">Add</button></a>
       </td>
     </tr>
   </table>

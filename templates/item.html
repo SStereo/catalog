@@ -16,6 +16,7 @@
 
   .card.card-cascade {
     width: 350px;
+    margin: 10px;
   }
 
   .view {
@@ -50,75 +51,57 @@
 {% block body %}
 <main>
   <div style="height: 80px"></div>
+  <section>
+    <!--Card-->
+      <div class="card card-cascade wider">
 
-  </div>
+          <!--Card image-->
+          <div class="view overlay hm-white-slight">
+              <img src="{{ item.image }}" class="img-fluid" alt="">
+              <a>
+                  <div class="mask"></div>
+              </a>
+          </div>
+          <!--Card image-->
 
-  <table class="main-table">
-    <tr>
-      <th><h2>Category</h2></th>
-      <th><h2>Item</h2></th>
-    </tr>
-    <tr>
-      <td class="main-table-categories">
-        <section>
-                <div class="card card-body">
-                  <h5 class="card-title">{{ category.name }}</h5>
-                </div>
-        </section>
-      </td>
-      <td class="main-table-latestitems">
-        <section>
-          <!--Card-->
-            <div class="card card-cascade wider">
+          <!--Card content-->
+          <div class="card-body text-center no-padding">
+              <!--Category & Title-->
+              <a href="" class="text-muted">
+                  <h5>{{ category.name }}</h5>
+              </a>
+              <h4 class="card-title">
+                  <strong>
+                      {{ item.name }}
+                  </strong>
+              </h4>
 
-                <!--Card image-->
-                <div class="view overlay hm-white-slight">
-                    <img src="{{ item.image }}" class="img-fluid" alt="">
-                    <a>
-                        <div class="mask"></div>
-                    </a>
-                </div>
-                <!--Card image-->
+              <!--Description-->
+              <p class="card-text">{{ item.description }}</p>
 
-                <!--Card content-->
-                <div class="card-body text-center no-padding">
-                    <!--Category & Title-->
-                    <a href="" class="text-muted">
-                        <h5>{{ category.name }}</h5>
-                    </a>
-                    <h4 class="card-title">
-                        <strong>
-                            {{ item.name }}
-                        </strong>
-                    </h4>
+              <!--Card footer-->
+              <div class="card-footer">
+                  <span class="left font-bold">
+                      <strong>{{ item.price }}$</strong>
+                  </span>
+                  <span class="right">
+                      <a class="" data-toggle="tooltip" data-placement="top" title="Quick Look">
+                          <i class="fa fa-eye grey-text"></i>
+                      </a>
+                      <a class="" data-toggle="tooltip" data-placement="top" title="Add to Wishlist">
+                          <i class="fa fa-heart grey-text"></i>
+                      </a>
+                  </span>
+              </div>
+              <a href="{{ url_for('editItem', category=category.name, item=item.name) }}"><button type="button" class="btn btn-primary">Edit</button></a>
+              <a href="{{ url_for('deleteItem', item=item.name) }}"><button type="button" class="btn btn-danger">Delete</button>
+          </div>
+          <!--Card content-->
 
-                    <!--Description-->
-                    <p class="card-text">{{ item.description }}</p>
+      </div>
+      <!--Card-->
+  </section>
 
-                    <!--Card footer-->
-                    <div class="card-footer">
-                        <span class="left font-bold">
-                            <strong>{{ item.price }}$</strong>
-                        </span>
-                        <span class="right">
-                            <a class="" data-toggle="tooltip" data-placement="top" title="Quick Look">
-                                <i class="fa fa-eye grey-text"></i>
-                            </a>
-                            <a class="" data-toggle="tooltip" data-placement="top" title="Add to Wishlist">
-                                <i class="fa fa-heart grey-text"></i>
-                            </a>
-                        </span>
-                    </div>
-
-                </div>
-                <!--Card content-->
-
-            </div>
-            <!--Card-->
-        </section>
-      </td>
-    </tr>
-  </table>
 <div style="height: 68px">
 
 </div>

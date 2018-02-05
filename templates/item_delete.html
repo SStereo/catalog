@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+
+{% block style %}
+<style>
+
+  /* Styles for the shopping list form */
+
+  .card {
+    width: 350px;
+    height: 60px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card.card-cascade {
+    width: 350px;
+  }
+
+  .view {
+    width: 350px;
+  }
+
+  .main-table-categories {
+    width: 40%;
+    vertical-align: top;
+  }
+
+  .main-table-latestitems {
+    width: 60%;
+    vertical-align: top;
+  }
+
+  .main-table {
+    vertical-align: top;
+    margin: 5px;
+  }
+
+  .img-fluid {
+    width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <div style="height: 75px"></div>
+
+  </div>
+
+
+  <section>
+    <!--Card-->
+
+      <div class="card card-cascade wider">
+        <h2>Delete Item</h2>
+        <form action="{{ url_for('deleteItem', item=item.name) }}" method="POST" enctype="multipart/form-data">
+        <p>Are you sure you want to delete item {{ item.name }}?</p>
+          <label for="name1" class="disabled">Item name</label>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit" name="button" value="Yes">Yes</button>
+            <button class="btn btn-secondary" type="submit" name="button" value="No">No</button>
+        </div>
+        </form>
+      </div>
+      <!--Card-->
+  </section>
+
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+// Material Select Initialization
+ $(document).ready(function() {
+    $('.mdb-select').material_select();
+  });
+</script>
+{% endblock %}

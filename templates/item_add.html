@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+
+{% block style %}
+<style>
+
+  /* Styles for the shopping list form */
+
+  .card {
+    width: 350px;
+    height: 60px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .card.card-cascade {
+    width: 350px;
+  }
+
+  .view {
+    width: 350px;
+  }
+
+  .main-table-categories {
+    width: 40%;
+    vertical-align: top;
+  }
+
+  .main-table-latestitems {
+    width: 60%;
+    vertical-align: top;
+  }
+
+  .main-table {
+    vertical-align: top;
+    margin: 5px;
+  }
+
+  .img-fluid {
+    width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <div style="height: 75px"></div>
+
+  </div>
+
+
+  <section>
+    <!--Card-->
+
+      <div class="card card-cascade wider">
+        <h2>Create Item</h2>
+        <form action="{{ url_for('showAddItem') }}" method="POST" enctype="multipart/form-data">
+        <div class="md-form">
+          <input type="text" id="name1" name="name" class="form-control">
+          <label for="name1" class="">Item name</label>
+        </div>
+        <div class="md-form">
+          <input type="text" id="price1" name="price" class="form-control">
+          <label for="price1" class="">Price</label>
+        </div>
+        <div class="md-form">
+          <input type="text" id="image1" name="image" class="form-control">
+          <label for="image1" class="">Image URL</label>
+        </div>
+        <div class="md-form">
+          <textarea type="text" id="form76" name="description" class="md-textarea"></textarea>
+          <label for="form76">Description</label>
+        </div>
+        <div class="md-form">
+          <select class="mdb-select" name="category_id">
+          {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+          </select>
+          <label>Category</label>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit" name="button" value="Save">Save</button>
+            <button class="btn btn-secondary" type="submit" name="button" value="Cancel">Cancel</button>
+        </div>
+        </form>
+      </div>
+      <!--Card-->
+  </section>
+
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+// Material Select Initialization
+ $(document).ready(function() {
+    $('.mdb-select').material_select();
+  });
+</script>
+{% endblock %}
