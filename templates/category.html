@@ -62,8 +62,9 @@
           {% endfor %}
           </ul>
         </section>
-        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-        <a href="{{ url_for('showAddItem') }}"><button type="button" class="btn btn-primary">Add</button></a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('showAddItem') }}"><button type="button" class="btn btn-primary">Add</button></a>
+        {% endif %}
       </td>
     </tr>
   </table>
