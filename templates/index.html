@@ -6,6 +6,26 @@
 
   /* Styles for the shopping list form */
 
+
+  @media screen and (min-width: 501px) {
+    #Categories {
+      width: 50%;
+      float: left;
+    }
+    #Latest_Items {
+      width: 50%;
+      float: left;
+    }
+  }
+
+
+  @media screen and (min-width: 100px) and (max-width: 500px) {
+     body {
+       background: black;
+       color: white;
+     }
+  }
+
   .card {
     width: 250px;
     height: 60px;
@@ -34,6 +54,8 @@
     height: 50px;
   }
 
+
+
 </style>
 {% endblock %}
 
@@ -43,43 +65,23 @@
   <div style="height: 80px"></div>
 
   </div>
-
-  <table class="main-table">
-    <tr>
-      <th><h2>Categories</h2></th>
-      <th><h2>Latest Items</h2></th>
-    </tr>
-    <tr>
-      <td class="main-table-categories">
-        <section>
-          {% for c in categories %}
-
-                <div class="card card-body">
-                  <!-- <img src="{{ c.image }}" class="cat-image" alt=""> -->
-                  <a href="{{ url_for('showCategoryItems', category=c.name) }}"><h5 class="card-title">{{ c.name }}</h5></a>
-                </div>
-          {% endfor %}
-        </section>
-      </td>
-      <td class="main-table-latestitems">
-        <section>
-          <ul class="list-group">
-          {% for i in latest_items %}
-
-              <li class="list-group-item"><a href="{{ url_for('showItem', category=i.category.name, item=i.name) }}">{{ i.name }}</a> ({{ i.category.name }})</li>
-
-          {% endfor %}
-          </ul>
-        </section>
-      </td>
-    </tr>
-  </table>
-<div style="height: 68px">
-
-</div>
-
-
-
+  <div id="Categories">
+    <h2>Categories</h2>
+    {% for c in categories %}
+          <div class="card card-body">
+            <!-- <img src="{{ c.image }}" class="cat-image" alt=""> -->
+            <a href="{{ url_for('showCategoryItems', category=c.name) }}"><h5 class="card-title">{{ c.name }}</h5></a>
+          </div>
+    {% endfor %}
+  </div>
+  <div id="Latest_Items">
+    <h2>Latest Items</h2>
+    <ul class="list-group">
+    {% for i in latest_items %}
+        <li class="list-group-item"><a href="{{ url_for('showItem', category=i.category.name, item=i.name) }}">{{ i.name }}</a> ({{ i.category.name }})</li>
+    {% endfor %}
+    </ul>
+  </div>
 
 </main>
 {% endblock %}

@@ -17,6 +17,16 @@ app.config['SECRET_KEY'] = "ABC123"
 app.config['SECURITY_REGISTERABLE'] = True
 app.config['SECURITY_RECOVERABLE'] = True
 app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
+app.config['SOCIAL_FACEBOOK'] = {
+    'consumer_key': '123',
+    'consumer_secret': '123'
+}
+app.config['SOCIAL_GOOGLE'] = {
+    'consumer_key': '123',
+    'consumer_secret': '123'
+}
+
+
 db.init_app(app)
 
 # Setup Flask-Security
