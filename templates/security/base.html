@@ -5,11 +5,11 @@
   <head>
     {%- block head %}
     <title>{% block title %}{{ title|default }}{% endblock title %}</title>
-
       {%- block metas %}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
       {%- endblock metas %}
-
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
       <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
       <link href="{{ url_for('static', filename='css/mdb.min.css') }}" rel="stylesheet">
@@ -23,7 +23,6 @@
       {%- endblock navbar %}
       {% block content -%}
       {%- endblock content %}
-
       <script type=text/javascript src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
       <script type=text/javascript src="{{ url_for('static', filename='js/popper.js') }}"></script>
       <script type=text/javascript src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>

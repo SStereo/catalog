@@ -1,7 +1,34 @@
-{% extends "security/base.html" %}
+{% extends "layout.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
 
-{% block content %}
+{% block style %}
+  <style>
+    .card {
+      width: 350px;
+
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card-body {
+      padding: 0.5rem;
+    }
+
+    .form-elegant .font-small {
+      font-size: 0.8rem; }
+
+    .form-elegant .z-depth-1a {
+      -webkit-box-shadow: 0 2px 5px 0 rgba(55, 161, 255, 0.26), 0 4px 12px 0 rgba(121, 155, 254, 0.25);
+      box-shadow: 0 2px 5px 0 rgba(55, 161, 255, 0.26), 0 4px 12px 0 rgba(121, 155, 254, 0.25); }
+
+    .form-elegant .z-depth-1-half,
+    .form-elegant .btn:hover {
+      -webkit-box-shadow: 0 5px 11px 0 rgba(85, 182, 255, 0.28), 0 4px 15px 0 rgba(36, 133, 255, 0.15);
+      box-shadow: 0 5px 11px 0 rgba(85, 182, 255, 0.28), 0 4px 15px 0 rgba(36, 133, 255, 0.15); }
+  </style>
+{% endblock %}
+
+{% block body %}
 {% include "security/_messages.html" %}
 <h1>{{ _('Register') }}</h1>
 <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
@@ -13,5 +40,4 @@
   {% endif %}
   {{ render_field(register_user_form.submit) }}
 </form>
-{% include "security/_menu.html" %}
 {% endblock %}

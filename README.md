@@ -1,11 +1,17 @@
-Installation:
-Install Udacity vagrant vm
-Install additional required libraries using sudo pip install
-* flask-security (will include the following package:
-  speaklater, flask-babelEx, flask-login, blinker, flask-principal, WTForms, flask-mail)
-* flask-sqlalchemy (tbc)
-* bcrypt (tbc)
-* flask-social  (will include oauth2 and Flask-Oauth libraries)
-* Facebook SDK (pip install http://github.com/pythonforfacebook/facebook-sdk/tarball/master)
-* Google Python Library (pip install oauth2client google-api-python-client)
-For Social login via Google and Facebook, setup the related client/app Ids as well as secrets
+Catalog App
+=============
+
+This Project was created by SStereo to learn python/html/CSS during the Udacity
+Nanodegree Training. Feel free to use this code for your own training purposes.
+
+INSTALL & RUN
+--------------------
+1. Download/Clone the repository onto your local hard drive
+2. Install Udacity vagrant vm (https://github.com/udacity/fullstack-nanodegree-vm)
+3. Start the vagrant vm using vagrant up and connect via ssh
+3. Install additional required libraries using pip install: flask-security, flask-sqlalchemy, bcrypt
+4. Change to the directory /vagrant/catalog and run python application.py
+
+CONTACT
+-------
+You can contact me on GitHub under SStereo.

@@ -1,11 +1,17 @@
-{% extends "security/base.html" %}
+{% extends "layout.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
 
-{% block styles %}
+{% block style %}
   <style>
     .card {
       width: 350px;
-      display: inline-block;
+
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card-body {
+      padding: 0.5rem;
     }
 
     .form-elegant .font-small {
@@ -23,17 +29,17 @@
 {% endblock %}
 
 
-{% block content %}
+{% block body %}
 {% include "security/_messages.html" %}
 
 <!--Form without header-->
 <div class="card">
 
-    <div class="card-body mx-4">
+    <div class="card-body mx-2">
 
         <!--Header-->
         <div class="text-center">
-            <h3 class="dark-grey-text mb-5"><strong>{{ _('Login') }}</strong></h3>
+            <h3 class="dark-grey-text mb-2"><strong>{{ _('Login') }}</strong></h3>
         </div>
 
         <!--Body-->
@@ -44,37 +50,31 @@
             {{ render_field_with_errors(login_user_form.email, class="form-control") }}
           </div>
 
-          <div class="md-form pb-3">
+          <div class="md-form">
             {{ render_field_with_errors(login_user_form.password, class="form-control") }}
             <p class="font-small blue-text d-flex justify-content-end">Forgot <a href="{{ url_for_security('forgot_password') }}" class="blue-text ml-1"> Password?</a></p>
           </div>
 
           <div class="form-group">
-            {{ render_field_with_errors(login_user_form.remember) }}
+            <input type="checkbox" id="remember" name="remember" value="y">
+            <label for="remember">Remember Me</label>
           </div>
 
           <div class="text-center mb-3">
               <button type="submit" class="btn blue-gradient btn-block btn-rounded z-depth-1a">Sign in</button>
           </div>
         </form>
-
-        <p class="font-small dark-grey-text text-right d-flex justify-content-center mb-3 pt-2"> or Sign in with:</p>
-
-            <div class="row my-3 d-flex justify-content-center">
-                <!--Facebook-->
-                <button type="button" class="btn btn-white btn-rounded mr-md-3 z-depth-1a"><i class="fa fa-facebook blue-text text-center"></i></button>
-                <!--Google +-->
-                <button type="button" class="btn btn-white btn-rounded z-depth-1a"><i class="fa fa-google-plus blue-text"></i></button>
-            </div>
-
     </div>
 
     <!--Footer-->
-    <div class="modal-footer mx-5 pt-3 mb-1">
+    <div class="modal-footer mx-2">
         <p class="font-small grey-text d-flex justify-content-end">Not a member? <a href="{{ url_for_security('register') }}" class="blue-text ml-1"> Register</a></p>
     </div>
 
 </div>
 <!--/Form without header-->
 
+{% endblock %}
+
+{% block script %}
 {% endblock %}
