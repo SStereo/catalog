@@ -1,37 +1,59 @@
 import datetime
-# from sqlalchemy import create_engine
-# from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import relationship
 
-# password encryption into hash
-
+# Recommended library when using sqlalchemy with flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import UserMixin, RoleMixin
+
+# Required to encrypt and validate passwords for local user accounts
+from passlib.apps import custom_app_context as pwd_context
 
 # Base = declarative_base()
 db = SQLAlchemy()
 
 
-roles_users = db.Table('roles_users',
-        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
 
-class Role(db.Model, RoleMixin):
+class Role(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    name = db.Column(db.String(250), nullable=False)
+    password_hash = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
+    picture = db.Column(db.String(250), nullable=True)
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+# TODO: Understand properties based on Flask-login
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+            return str(self.id)
 
 
 class Category(db.Model):

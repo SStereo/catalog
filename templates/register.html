@@ -1,0 +1,68 @@
+{% set activeMenuItem = 5 %}
+{% extends "layout.html" %}
+
+
+{% block style %}
+<style>
+
+
+  .card {
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+    @include media-breakpoint-up(md);
+  }
+</style>
+{% endblock %}
+
+
+{% block body %}
+<main>
+  <div style="height: 68px"></div>
+
+  <!-- Form register -->
+  <section class="form-elegant">
+
+      <!--Form without header-->
+      <div class="card">
+          <div class="card-body mx-4">
+            <form action="{{ url_for('showSignup') }}" method="POST" enctype="multipart/form-data">
+
+              <p class="h5 text-center mb-4">Sign up</p>
+
+              <div class="md-form">
+                  <i class="fa fa-user prefix grey-text"></i>
+                  <input type="text" id="orangeForm-name" name="username" class="form-control">
+                  <label for="orangeForm-name">Your name</label>
+              </div>
+              <div class="md-form">
+                  <i class="fa fa-envelope prefix grey-text"></i>
+                  <input type="text" id="orangeForm-email" name="email" class="form-control">
+                  <label for="orangeForm-email">Your email</label>
+              </div>
+
+              <div class="md-form">
+                  <i class="fa fa-lock prefix grey-text"></i>
+                  <input type="password" id="orangeForm-pass" name="password" class="form-control">
+                  <label for="orangeForm-pass">Your password</label>
+              </div>
+
+              <div class="text-center">
+                  <button class="btn btn-deep-orange" type="submit" name="button" value="Save">Sign up</button>
+              </div>
+
+            </form>
+          </div>
+      </div>
+  </section>
+
+
+</main>
+{% endblock %}
+
+{% block script %}
+<script>
+
+</script>
+{% endblock %}

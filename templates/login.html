@@ -1,0 +1,202 @@
+{% extends "layout.html" %}
+
+{% block style %}
+  <style>
+    .card {
+      width: 350px;
+
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card-body {
+      padding: 0.5rem;
+    }
+
+    .form-elegant .font-small {
+      font-size: 0.8rem; }
+
+    .form-elegant .z-depth-1a {
+      -webkit-box-shadow: 0 2px 5px 0 rgba(55, 161, 255, 0.26), 0 4px 12px 0 rgba(121, 155, 254, 0.25);
+      box-shadow: 0 2px 5px 0 rgba(55, 161, 255, 0.26), 0 4px 12px 0 rgba(121, 155, 254, 0.25); }
+
+    .form-elegant .z-depth-1-half,
+    .form-elegant .btn:hover {
+      -webkit-box-shadow: 0 5px 11px 0 rgba(85, 182, 255, 0.28), 0 4px 15px 0 rgba(36, 133, 255, 0.15);
+      box-shadow: 0 5px 11px 0 rgba(85, 182, 255, 0.28), 0 4px 15px 0 rgba(36, 133, 255, 0.15); }
+  </style>
+{% endblock %}
+
+
+{% block body %}
+
+<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+
+<!-- LOAD PRE-REQUISITES FOR FACEBOOK SIGN IN -->
+<!-- TODO: Implement later facebook SDK via jQuery: https://developers.facebook.com/docs/javascript/howto/jquery/v2.11 -->
+
+
+<!--Form without header-->
+<div class="card">
+
+    <div class="card-body mx-2">
+
+        <!--Header-->
+        <div class="text-center">
+            <h3 class="dark-grey-text mb-2"><strong>Login</strong></h3>
+        </div>
+
+        <!--Body-->
+        <form action="{{ url_for('showLogin') }}" method="POST" name="login_user_form">
+          <input type="hidden" name="tbd">
+          <div class="md-form">
+            <input type="text" name="email" class="form-control" id="email">
+            <label for="email">Email</label>
+
+          </div>
+
+          <div class="md-form">
+            <input type="text" name="password" class="form-control" id="password">
+            <label for="password">Password</label>
+            <p class="font-small blue-text d-flex justify-content-end">Forgot <a href="{{ url_for('forgot_password') }}" class="blue-text ml-1"> Password?</a></p>
+          </div>
+
+          <div class="form-group">
+            <input type="checkbox" id="remember" name="remember" value="y">
+            <label for="remember">Remember Me</label>
+          </div>
+
+          <div class="text-center mb-3">
+              <button type="submit" class="btn blue-gradient btn-block btn-rounded z-depth-1a">Sign in</button>
+          </div>
+        </form>
+        <p class="font-small dark-grey-text text-right d-flex justify-content-center mb-3 pt-2"> or Sign in with:</p>
+        <div class="row my-3 d-flex justify-content-center">
+          <!-- GOOGLE PLUS SIGN IN BUTTON-->
+          <div class="div-login-button" id="signinButton">
+            <span class="g-signin"
+              data-scope="openid email"
+              data-clientid="{{G_CLIENT_ID}}"
+              data-redirecturi="postmessage"
+              data-accesstype="offline"
+              data-cookiepolicy="single_host_origin"
+              data-callback="signInCallbackGoogle"
+              data-approvalprompt="force">
+            </span>
+          </div>
+          <!-- START Facebook login button -->
+        	<div class="div-login-button fb-login-button"
+        	     data-max-rows="1"
+        			 data-size="medium"
+        			 data-button-type="continue_with"
+        			 data-show-faces="false"
+        			 data-auto-logout-link="true"
+        			 data-use-continue-as="false"
+        			 scope="public_profile,email"
+        		   onlogin="signInCallbackFB();">
+        	</div>
+        </div>
+
+
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer mx-2">
+        <p class="font-small grey-text d-flex justify-content-end">Not a member? <a href="{{ url_for('showRegister') }}" class="blue-text ml-1"> Register</a></p>
+    </div>
+
+</div>
+
+<div id="result"></div>
+<!--/Form without header-->
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '{{ F_APP_ID }}',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v2.7'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/de_DE/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk')
+  );
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function signInCallbackFB() {
+    var access_token = FB.getAuthResponse()['accessToken'];
+    console.log(access_token)
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+     $.ajax({
+      type: 'POST',
+      url: '/fbconnect?state={{STATE}}',
+      processData: false,
+      data: access_token,
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+         setTimeout(function() {
+          window.location.href = "{{redirect_next}}";
+         }, 4000);
+
+      } else {
+        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+         }
+      }
+
+    });
+    });
+  }
+
+  function signInCallbackGoogle(authResult) {
+    if (authResult['code']) {
+      // Hide the sign-in button now that the user is authorized
+      $('#signinButton').attr('style', 'display: none');
+      // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+      $.ajax({
+        type: 'POST',
+        url: '/gconnect?state={{STATE}}',
+        processData: false,
+        data: authResult['code'],
+        contentType: 'application/octet-stream; charset=utf-8',
+        success: function(result) {
+          // Handle or verify the server response if necessary.
+          if (result) {
+            $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+           setTimeout(function() {
+            window.location.href = "{{redirect_next}}";
+           }, 4000);
+
+        } else if (authResult['error']) {
+      console.log('There was an error: ' + authResult['error']);
+    } else {
+          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+           }
+        }
+
+    }); }
+  }
+
+</script>
+
+{% endblock %}
