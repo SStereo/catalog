@@ -86,7 +86,7 @@
         <li class="list-group-item"><a href="{{ url_for('showItem', category=i.category.name, item=i.name) }}">{{ i.name }}</a> ({{ i.category.name }})</li>
     {% endfor %}
     </ul>
-    {% if 'username' in loginSession %}
+    {% if 'user_id' in loginSession %}
       <a href="{{ url_for('showAddItem') }}"><button type="button" class="btn btn-primary">Add</button></a>
     {% endif %}
   </div>

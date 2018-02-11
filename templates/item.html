@@ -23,21 +23,6 @@
     width: 350px;
   }
 
-  .main-table-categories {
-    width: 40%;
-    vertical-align: top;
-  }
-
-  .main-table-latestitems {
-    width: 60%;
-    vertical-align: top;
-  }
-
-  .main-table {
-    vertical-align: top;
-    margin: 5px;
-  }
-
   .img-fluid {
     width: 260px;
     margin-left: auto;
@@ -57,7 +42,7 @@
 
           <!--Card image-->
           <div class="view overlay hm-white-slight">
-              <img src="{{ item.image }}" class="img-fluid" alt="">
+              <img src="{{url_for('upload_static', filename=item.image)}}" class="img-fluid" alt="">
               <a>
                   <div class="mask"></div>
               </a>
@@ -93,8 +78,10 @@
                       </a>
                   </span>
               </div>
+              {% if 'user_id' in loginSession %}
               <a href="{{ url_for('editItem', category=category.name, item=item.name) }}"><button type="button" class="btn btn-primary">Edit</button></a>
               <a href="{{ url_for('deleteItem', item=item.name) }}"><button type="button" class="btn btn-danger">Delete</button>
+              {% endif %}
           </div>
           <!--Card content-->
 

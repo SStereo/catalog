@@ -60,6 +60,7 @@
       <div class="card card-cascade wider">
         <h2>Create Item</h2>
         <form action="{{ url_for('showAddItem') }}" method="POST" enctype="multipart/form-data">
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token }}">
         <div class="md-form">
           <input type="text" id="name1" name="name" class="form-control">
           <label for="name1" class="">Item name</label>
@@ -68,10 +69,15 @@
           <input type="text" id="price1" name="price" class="form-control">
           <label for="price1" class="">Price</label>
         </div>
-        <div class="md-form">
-          <input type="text" id="image1" name="image" class="form-control">
-          <label for="image1" class="">Image URL</label>
-        </div>
+        <div class="file-field">
+            <div class="btn btn-primary btn-sm">
+                <span>Choose Image</span>
+                <input type="file" name="file">
+            </div>
+            <div class="file-path-wrapper">
+               <input class="file-path validate" name="filepath" type="text" placeholder="Upload your file">
+            </div>
+          </div>
         <div class="md-form">
           <textarea type="text" id="form76" name="description" class="md-textarea"></textarea>
           <label for="form76">Description</label>

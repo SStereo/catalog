@@ -26,8 +26,9 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
     name = db.Column(db.String(250), nullable=False)
+    provider = db.Column(db.String(250), nullable=True)
     password_hash = db.Column(db.String(255))
-    active = db.Column(db.Boolean())
+    active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
     picture = db.Column(db.String(250), nullable=True)
     roles = db.relationship('Role', secondary=roles_users,

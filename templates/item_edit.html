@@ -22,21 +22,6 @@
     width: 350px;
   }
 
-  .main-table-categories {
-    width: 40%;
-    vertical-align: top;
-  }
-
-  .main-table-latestitems {
-    width: 60%;
-    vertical-align: top;
-  }
-
-  .main-table {
-    vertical-align: top;
-    margin: 5px;
-  }
-
   .img-fluid {
     width: 260px;
     margin-left: auto;
@@ -49,36 +34,57 @@
 
 {% block body %}
 <main>
-  <div style="height: 75px"></div>
-
-  </div>
-
-
   <section>
     <!--Card-->
 
       <div class="card card-cascade wider">
+        <!--Card image-->
         <h2>Edit Item</h2>
+        <div class="view overlay hm-white-slight">
+            <img src="{{url_for('upload_static', filename=item.image)}}" class="img-fluid" alt="">
+            <a>
+                <div class="mask"></div>
+            </a>
+        </div>
+        <!--Card image-->
         <form action="{{ url_for('editItem', category=item.category.name, item=item.name) }}" method="POST" enctype="multipart/form-data">
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token }}">
+        <div class="file-field">
+          <div class="btn btn-primary btn-sm">
+            <span>Change Image</span>
+              <input type="file" name="file">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" name="filepath" type="hidden" placeholder="Change Image">
+          </div>
+        </div>
         <div class="md-form">
-          <input type="text" id="name1" name="name" class="form-control" value="{{ item.name }}" disabled>
-          <label for="name1" class="disabled">Item name</label>
+          <input type="hidden" name="id" value="{{ item.id }}">
+        </div>
+        <div class="md-form">
+          <input type="text" id="name1" name="name" class="form-control" value="{{ item.name }}">
+          <label for="name1">Item name</label>
         </div>
         <div class="md-form">
           <input type="text" id="price1" name="price" class="form-control" value="{{ item.price }}">
           <label for="price1" class="">Price</label>
         </div>
+
         <div class="md-form">
-          <input type="text" id="image1" name="image" class="form-control" value="{{ item.image }}">
-          <label for="image1" class="">Image URL</label>
-        </div>
-        <div class="md-form">
-          <textarea type="text" id="form76" name="description" class="md-textarea" value="{{ item.description }}"></textarea>
+          <textarea type="text" id="form76" name="description" class="md-textarea">{{ item.description }}</textarea>
           <label for="form76">Description</label>
         </div>
         <div class="md-form">
-          <input type="text" id="cat1" name="image" class="form-control" value="{{ item.category.name }}" disabled>
-          <label for="cat1" class="disabled">Category</label>
+          <select class="mdb-select" name="category_id">
+          {% for c in categories %}
+            {% if c.name == item.category.name %}
+              <option value="{{ c.id }}" selected>{{ c.name }}</option>
+            {% else %}
+              <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endif %}
+          {% endfor %}
+          </select>
+          <label>Category</label>
         </div>
         <div class="form-group">
             <button class="btn btn-primary" type="submit" name="button" value="Save">Save</button>

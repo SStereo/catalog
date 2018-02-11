@@ -43,37 +43,12 @@
 <div class="card">
 
     <div class="card-body mx-2">
-
+      <div id="loginContent">
         <!--Header-->
         <div class="text-center">
             <h3 class="dark-grey-text mb-2"><strong>Login</strong></h3>
         </div>
-
-        <!--Body-->
-        <form action="{{ url_for('showLogin') }}" method="POST" name="login_user_form">
-          <input type="hidden" name="tbd">
-          <div class="md-form">
-            <input type="text" name="email" class="form-control" id="email">
-            <label for="email">Email</label>
-
-          </div>
-
-          <div class="md-form">
-            <input type="text" name="password" class="form-control" id="password">
-            <label for="password">Password</label>
-            <p class="font-small blue-text d-flex justify-content-end">Forgot <a href="{{ url_for('forgot_password') }}" class="blue-text ml-1"> Password?</a></p>
-          </div>
-
-          <div class="form-group">
-            <input type="checkbox" id="remember" name="remember" value="y">
-            <label for="remember">Remember Me</label>
-          </div>
-
-          <div class="text-center mb-3">
-              <button type="submit" class="btn blue-gradient btn-block btn-rounded z-depth-1a">Sign in</button>
-          </div>
-        </form>
-        <p class="font-small dark-grey-text text-right d-flex justify-content-center mb-3 pt-2"> or Sign in with:</p>
+        <p>{{ message }}</p>
         <div class="row my-3 d-flex justify-content-center">
           <!-- GOOGLE PLUS SIGN IN BUTTON-->
           <div class="div-login-button" id="signinButton">
@@ -88,29 +63,54 @@
             </span>
           </div>
           <!-- START Facebook login button -->
-        	<div class="div-login-button fb-login-button"
-        	     data-max-rows="1"
-        			 data-size="medium"
-        			 data-button-type="continue_with"
-        			 data-show-faces="false"
-        			 data-auto-logout-link="true"
-        			 data-use-continue-as="false"
-        			 scope="public_profile,email"
-        		   onlogin="signInCallbackFB();">
-        	</div>
+          <div class="div-login-button fb-login-button"
+               data-max-rows="1"
+               data-size="medium"
+               data-button-type="continue_with"
+               data-show-faces="false"
+               data-auto-logout-link="true"
+               data-use-continue-as="false"
+               scope="public_profile,email"
+               onlogin="signInCallbackFB();">
+          </div>
+        </div>
+        <p class="font-small dark-grey-text text-right d-flex justify-content-center mb-3 pt-2"> or Sign in with Email:</p>
+        <!--Body-->
+        <form action="{{ url_for('showLogin') }}" method="POST" name="login_user_form">
+          <input name="_csrf_token" type="hidden" value="{{ csrf_token }}">
+          <div class="md-form">
+            <input type="text" name="email" class="form-control" id="email">
+            <label for="email">Email</label>
+
+          </div>
+
+          <div class="md-form">
+            <input type="text" name="password" class="form-control" id="password">
+            <label for="password">Password</label>
+            <p class="font-small blue-text d-flex justify-content-end">Forgot <a href="#" class="blue-text ml-1"> Password?</a></p>
+          </div>
+
+          <div class="form-group">
+            <input type="checkbox" id="remember" name="remember" value="y">
+            <label for="remember">Remember Me</label>
+          </div>
+
+          <div class="text-center mb-3">
+              <button type="submit" class="btn blue-gradient btn-block btn-rounded z-depth-1a">Sign in</button>
+          </div>
+        </form>
+
+        <!--Footer-->
+        <div class="modal-footer mx-2">
+            <p class="font-small grey-text d-flex justify-content-end">Not a member? <a href="{{ url_for('showRegister') }}" class="blue-text ml-1"> Register</a></p>
         </div>
 
-
+      </div>
+      <div id="result"></div>
     </div>
-
-    <!--Footer-->
-    <div class="modal-footer mx-2">
-        <p class="font-small grey-text d-flex justify-content-end">Not a member? <a href="{{ url_for('showRegister') }}" class="blue-text ml-1"> Register</a></p>
-    </div>
-
 </div>
 
-<div id="result"></div>
+
 <!--/Form without header-->
 
 {% endblock %}
@@ -147,16 +147,17 @@
       console.log('Successful login for: ' + response.name);
      $.ajax({
       type: 'POST',
-      url: '/fbconnect?state={{STATE}}',
+      url: '/fbconnect?state={{ csrf_token }}',
       processData: false,
       data: access_token,
       contentType: 'application/octet-stream; charset=utf-8',
       success: function(result) {
         // Handle or verify the server response if necessary.
         if (result) {
+          $('#loginContent').hide()
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
          setTimeout(function() {
-          window.location.href = "{{redirect_next}}";
+          window.location.href = "{{ redirect_next }}";
          }, 4000);
 
       } else {
@@ -175,13 +176,14 @@
       // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
       $.ajax({
         type: 'POST',
-        url: '/gconnect?state={{STATE}}',
+        url: '/gconnect?state={{ csrf_token }}',
         processData: false,
         data: authResult['code'],
         contentType: 'application/octet-stream; charset=utf-8',
         success: function(result) {
           // Handle or verify the server response if necessary.
           if (result) {
+            $('#loginContent').hide()
             $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
            setTimeout(function() {
             window.location.href = "{{redirect_next}}";

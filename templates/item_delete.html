@@ -22,21 +22,6 @@
     width: 350px;
   }
 
-  .main-table-categories {
-    width: 40%;
-    vertical-align: top;
-  }
-
-  .main-table-latestitems {
-    width: 60%;
-    vertical-align: top;
-  }
-
-  .main-table {
-    vertical-align: top;
-    margin: 5px;
-  }
-
   .img-fluid {
     width: 260px;
     margin-left: auto;
@@ -49,17 +34,13 @@
 
 {% block body %}
 <main>
-  <div style="height: 75px"></div>
-
-  </div>
-
-
   <section>
     <!--Card-->
 
       <div class="card card-cascade wider">
         <h2>Delete Item</h2>
         <form action="{{ url_for('deleteItem', item=item.name) }}" method="POST" enctype="multipart/form-data">
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token }}">
         <p>Are you sure you want to delete item {{ item.name }}?</p>
           <label for="name1" class="disabled">Item name</label>
         <div class="form-group">

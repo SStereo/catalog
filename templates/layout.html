@@ -36,7 +36,7 @@
                     <a class="nav-link white-text" href="{{ url_for('homepage') }}">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  {% if 'username' in loginSession %}
+                  {% if 'user_id' in loginSession %}
                     <a class="nav-link white-text" href="{{ url_for('showLogout') }}">Logout</a>
                   {% else %}
                     <a class="nav-link white-text" href="{{ url_for('showLogin') }}">Login</a>

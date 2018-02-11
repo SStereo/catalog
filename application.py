@@ -4,9 +4,12 @@ import os
 # Required to extract data from a json response (e.g. facebook oauth)
 import json
 
+# Required for file upload to generate filename with timestamp
+from datetime import datetime
+
 # Core application libraries for flask
 from flask import Flask, flash, render_template, request, redirect, \
-    jsonify, send_from_directory
+    jsonify, send_from_directory, abort
 
 # required for file upload
 from werkzeug.utils import secure_filename
@@ -29,7 +32,7 @@ from flask import session as login_session  # a dictionary to store information
 
 # Required to identify the path within an URL, for referrer after login
 # in python 3 use: from urllib.parse import urlparse
-from urlparse import urlparse
+from urlparse import urlparse, parse_qs
 
 # own security module
 from functools import wraps
@@ -38,49 +41,94 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = "ABC123"
 app.config['UPLOAD_FOLDER'] = 'upload'
+app.config['ALLOWED_FILE_EXTENSIONS'] = set(
+    ['pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///catalog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db.init_app(app)
 
 # Google oauth credentials
-GOOGLE_WEB_CLIENT_ID = '1036432897212-ssbkhb0al7840u8jqjv9b80124kav6bp.apps.googleusercontent.co'  # os.environ.get('GOOGLE_WEB_CLIENT_ID_TEST')
-GOOGLE_CLIENT_SECRET = '92B_5pwhOGc65ymM-0a-Pw0j'  # os.environ.get('GOOGLE_WEB_CLIENT_SECRET_TEST')
+GOOGLE_WEB_CLIENT_ID = \
+    'your apps google client id'
+GOOGLE_CLIENT_SECRET = 'your google client secret'
 
 # Facebook oauth credentials
-FACEBOOK_APP_ID = '608608916144255'  # os.environ.get('FACEBOOK_APP_ID_TEST')
-FACEBOOK_SECRET_KEY = '67eb81e39c7ff497899e4f3f56f12c5e'  # os.environ.get('FACEBOOK_SECRET_KEY_TEST')
+FACEBOOK_APP_ID = 'facebook app id'
+FACEBOOK_SECRET_KEY = 'your facebooks app id'
 
 # default image for items
 DEFAULT_ITEM_IMAGE = "https://semantic-ui.com/images/wireframe/image.png"
 
 target_url = ''
 
+
 def login_required(func):
 
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if 'username' not in login_session:
-            if request.url:
-                target_url = request.url
-            else:
-                target_url = '/'
-            print("Required to login before heading to %s" % target_url)
-            # TODO: Duplicate code to showLogin, clean up!
-            state = ''.join(
-                random.choice(
-                    string.ascii_uppercase + string.digits) for x in xrange(32))
-            login_session['state'] = state
-            return render_template(
-                "login.html",
-                STATE=state,
-                G_CLIENT_ID=GOOGLE_WEB_CLIENT_ID,
-                F_APP_ID=FACEBOOK_APP_ID,
-                redirect_next=target_url)
+        if 'user_id' not in login_session:
+            return login()
         else:
-            print('User already authenticated')
             return func(*args, **kwargs)
     return decorated_view
+
+
+def login(*args):
+    if args:
+        message = args[0]
+    else:
+        message = None
+
+    # Setup CSRF Protection
+    app.jinja_env.globals['csrf_token'] = generate_csrf_token()
+
+    if request.referrer:
+        previous_url = urlparse(request.referrer)[2]
+    else:
+        previous_url = '/'
+    target_url = request.url
+    if not target_url or previous_url == '/':
+        target_url = '/'
+    return render_template(
+        "login.html",
+        G_CLIENT_ID=GOOGLE_WEB_CLIENT_ID,
+        F_APP_ID=FACEBOOK_APP_ID,
+        redirect_next=target_url,
+        message=message)
+
+
+def validateUser(login_session):
+    '''
+    After successfuly 3rd party authentication checks if user
+    is authorized to access the application. Creates a user object if
+    necessary.
+    '''
+    # Validates if user exists and creates if necessary
+    user = getUser(login_session['email'])
+    if not user:
+        password = None
+        user = createUser(login_session, password)
+
+    if not user.active:
+        return False  # user is not authorized
+    else:
+        login_session['user_id'] = user.id
+        login_session['provider'] = user.provider
+        return True  # user is authorized
+
+
+def welcome():
+    output = ''
+    output += '<h1>Welcome, '
+    output += login_session['username']
+
+    output += '!</h1>'
+    output += '<img src="'
+    output += login_session['picture']
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;" \
+        "-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    return output
 
 
 @app.before_first_request
@@ -111,9 +159,9 @@ def setup():
                 Item(name="ball",
                      category=obj_categories[0],
                      price=129,
-                     description="An excellent leather ball crafted by the superior \
-                     company adidas in order to score in every game.",
-                     image="https://images-eu.ssl-images-amazon.com/images/I/91pmr1GielL._SL1500_.jpg"),
+                     description="An excellent leather ball crafted by \
+                     adidas in order to score in every game.",
+                     image="soccer-ball.jpg"),
                 Item(name="cap", category=obj_categories[1],
                      description="Does not matter how hot the sun in shining, \
                      with this cap you allways have a clear sight."),
@@ -157,7 +205,6 @@ def homepage():
 
 
 @app.route('/catalog/<string:category>/items', methods=['GET'])
-@login_required
 def showCategoryItems(category):
     if request.method == 'GET':
         cat_objs = Category.query.filter_by(
@@ -223,11 +270,11 @@ def showAddItem():
             name=request.form['name'],
             category_id=request.form['category_id'],
             description=request.form['description'],
-            image=request.form['image'],
+            image=fileHandler(request),
             price=request.form['price'])
         db.session.add(newItem)
         db.session.commit()
-        print "item added with id = %s" % newItem.category_id
+        print("Filename %s" % newItem.image)
         return redirect('/')
     else:
         return redirect('/')
@@ -242,18 +289,24 @@ def editItem(category, item):
             name=category).first()
         itm_objs = Item.query.filter(
             Item.category_id == cat_objs.id, Item.name == item).first()
+        cat_objs = Category.query.all()
         return render_template(
             "item_edit.html",
             item=itm_objs,
+            categories=cat_objs,
             loginSession=login_session)
     elif request.method == 'POST' and request.form['button'] == 'Save':
         cat_objs = Category.query.filter_by(
             name=category).first()
         itm_objs = Item.query.filter(
             Item.category_id == cat_objs.id, Item.name == item).first()
+        itm_objs.name = request.form['name']
         itm_objs.description = request.form['description']
-        itm_objs.image = request.form['image']
+        file_name = fileHandler(request)
+        if not file_name == '':
+            itm_objs.image = file_name
         itm_objs.price = request.form['price']
+        itm_objs.category_id = request.form['category_id']
         db.session.commit()
         return redirect('/')
     else:
@@ -288,6 +341,43 @@ def jsonCatalog():
     return jsonify(Catalog=[o.serialize for o in cat_objs])
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in \
+           app.config['ALLOWED_FILE_EXTENSIONS']
+
+
+def fileHandler(request):
+    '''
+    Validates file within request, generates a random name for the file
+    and stores it in the upload folder and returns the name of the file
+    '''
+    filename = ""
+    if 'file' not in request.files:
+        print("no file in request.files")
+        return filename
+
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit a empty part without filename
+    if file.filename == '':
+        print('Filename of uploaded file is empty')
+        return filename
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        now = datetime.now()
+        filename = "%s.%s" % (
+            now.strftime("%Y-%m-%d-%H-%M-%S-%f"),
+            filename.rsplit('.', 1)[1])
+        filepath = os.path.join(
+            app.config['UPLOAD_FOLDER'],
+            "%s.%s" % (now.strftime("%Y-%m-%d-%H-%M-%S-%f"),
+                       file.filename.rsplit('.', 1)[1]))
+        print("filename = " + filename)
+        file.save(filepath)
+        return filename
+
+
 # ---------------------------------------------
 # Security endpoints
 
@@ -308,42 +398,33 @@ def showRegister():
             login_session['username'] = username
             login_session['email'] = email
             login_session['provider'] = 'local'
-            login_session['user_id'] = createUser(login_session, password)
+            user = createUser(login_session, password)
+            validateUser(login_session)
     return redirect('/')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def showLogin():
-    # Generate a random session id and pass it to the login template
-    if request.referrer:
-        redirect_next = urlparse(request.referrer)[2]
-        print("Previous page was %s" % redirect_next)
-        if redirect_next == '':
-            redirect_next = '/'
-    else:
-        redirect_next = '/'
-
-    state = ''.join(
-        random.choice(
-            string.ascii_uppercase + string.digits) for x in xrange(32))
-    login_session['state'] = state
-    return render_template(
-        "login.html",
-        STATE=state,
-        G_CLIENT_ID=GOOGLE_WEB_CLIENT_ID,
-        F_APP_ID=FACEBOOK_APP_ID,
-        redirect_next=redirect_next)
-
-
-@app.route('/reset')
-def forgot_password():
-    return render_template("forgot_password.html")
+    if request.method == 'GET':
+        return login()
+    elif request.method == 'POST':
+        login_session['email'] = request.form['email']
+        password = request.form['password']
+        user = getUser(login_session['email'])
+        if not user:
+            return login("Unknown username or incorrect password")
+        else:
+            if user.verify_password(password) and validateUser(login_session):
+                flash("User successfully logged in")
+                return redirect('/')
+            else:
+                return login("Unknown username or incorrect password")
 
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
-    if request.args.get('state') != login_session['state']:
+    if request.args.get('state') != login_session['_csrf_token']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -418,32 +499,14 @@ def gconnect():
     login_session['email'] = data['email']
     login_session['provider'] = 'google'
 
-    # Validates if user already exists in the database
-    # if not it creates a new account in the Database
-
-    user_id = getUserID(login_session['email'])
-
-    if not user_id:
-        password = None
-        login_session['user_id'] = createUser(login_session, password)
+    # Validate user against database
+    if validateUser(login_session):
+        output = welcome()
+        flash("Now logged in as %s" % login_session['username'])
+        return output
     else:
-        login_session['user_id'] = user_id
-
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: " \
-        "150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
-
-    # TODO: add code to generate own server token to be send to client
-    # token = user.generate_auth_token(600)
-    # return jsonify({'token': token.decode('ascii')})
-
-    return output
+        flash('User is not authorized to access this application')
+        return False
 
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
@@ -477,7 +540,7 @@ def gdisconnect():
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
-    if request.args.get('state') != login_session['state']:
+    if request.args.get('state') != login_session['_csrf_token']:
         response = make_response(json.dumps(
             'Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -526,29 +589,16 @@ def fbconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
-
     login_session['picture'] = data["data"]["url"]
 
-    # see if user exists
-    user_id = getUserID(login_session['email'])
-
-    if not user_id:
-        password = None
-        user_id = createUser(login_session, password)
-    login_session['user_id'] = user_id
-
-    output = ''
-    output += '<h1>Welcome, '
-    output += login_session['username']
-
-    output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;" \
-        "-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-
-    flash("Now logged in as %s" % login_session['username'])
-    return output
+    # Validate user against database
+    if validateUser(login_session):
+        output = welcome()
+        flash("Now logged in as %s" % login_session['username'])
+        return output
+    else:
+        flash('User is not authorized to access this application')
+        return False
 
 
 @app.route('/fbdisconnect')
@@ -575,6 +625,7 @@ def showLogout():
         if login_session['provider'] == 'facebook':
             fbdisconnect()
             del login_session['facebook_id']
+            del login_session['access_token']
             del login_session['picture']
         del login_session['username']
         del login_session['email']
@@ -586,16 +637,47 @@ def showLogout():
         print("You were not logged in")
         return redirect('/')
 
+
+@app.before_request
+def csrf_protect():
+    '''
+    Aborts any post request if csrf token in the form does not match the
+    csrf token stored in the session
+    '''
+    if request.method == "POST":
+        token = login_session['_csrf_token']  # .pop('_csrf_token', None)
+        # when token submitted from hidden field in forms
+        token_from_form = request.form.get('_csrf_token')
+        print("token_from_form %s" % token_from_form)
+        # when token submitted via ajax post request during 3rd party oauth
+        if 'state' in parse_qs(urlparse(request.url).query):
+            utoken_from_qs = parse_qs(urlparse(request.url).query)['state']
+            token_from_qs = utoken_from_qs[0].encode('ascii', 'ignore')
+            print("token_from_qs %s" % token_from_qs)
+        else:
+            token_from_qs = ''
+        if not token:
+            abort(403)
+        elif (token != token_from_form) and (token != token_from_qs):
+            abort(403)
+
+
+def generate_csrf_token():
+    if '_csrf_token' not in login_session:
+        login_session['_csrf_token'] = ''.join(
+            random.choice(
+                string.ascii_uppercase + string.digits) for x in xrange(32))
+    return login_session['_csrf_token']
+
 # --------------
 # User Functions
-
-
 def createUser(login_session, password):
     if (login_session['provider'] == 'local'):
         newUser = User(
             name=login_session['username'],
-            email=login_session['email'])
-
+            email=login_session['email'],
+            provider=login_session['provider'])
+        print('Create new local user')
         newUser.hash_password(password)
         db.session.add(newUser)
         db.session.commit()
@@ -603,10 +685,11 @@ def createUser(login_session, password):
         newUser = User(
             name=login_session['username'],
             email=login_session['email'],
-            picture=login_session['picture'])
+            picture=login_session['picture'],
+            provider=login_session['provider'])
         db.session.add(newUser)
         db.session.commit()
-    return newUser.id
+    return newUser
 
 
 # Retrieves the user object
@@ -615,11 +698,11 @@ def getUserInfo(user_id):
     return user
 
 
-# Retrieves the user id based on an email
-def getUserID(email):
+# Retrieves the user based on an email
+def getUser(email):
     try:
         user = User.query.filter_by(email=email).one()
-        return user.id
+        return user
     except:
         return None
 
