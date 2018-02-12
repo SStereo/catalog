@@ -43,19 +43,20 @@ app.secret_key = "ABC123"
 app.config['UPLOAD_FOLDER'] = 'upload'
 app.config['ALLOWED_FILE_EXTENSIONS'] = set(
     ['pdf', 'png', 'jpg', 'jpeg', 'gif'])
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///catalog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db.init_app(app)
 
 # Google oauth credentials
 GOOGLE_WEB_CLIENT_ID = \
-    'your apps google client id'
-GOOGLE_CLIENT_SECRET = 'your google client secret'
+    'your client id'
+GOOGLE_CLIENT_SECRET = 'your client secret'
 
 # Facebook oauth credentials
-FACEBOOK_APP_ID = 'facebook app id'
-FACEBOOK_SECRET_KEY = 'your facebooks app id'
+FACEBOOK_APP_ID = 'your app id'
+FACEBOOK_SECRET_KEY = 'your app secret key'
+
 
 # default image for items
 DEFAULT_ITEM_IMAGE = "https://semantic-ui.com/images/wireframe/image.png"
@@ -80,7 +81,7 @@ def login(*args):
     else:
         message = None
 
-    # Setup CSRF Protection
+    # Generate a new CSRF token
     app.jinja_env.globals['csrf_token'] = generate_csrf_token()
 
     if request.referrer:
@@ -261,6 +262,8 @@ def showItem(category, item):
 def showAddItem():
     if request.method == 'GET':
         cat_objs = Category.query.all()
+        # Generate a new CSRF token
+        app.jinja_env.globals['csrf_token'] = generate_csrf_token()
         return render_template(
             "item_add.html",
             categories=cat_objs,
@@ -280,26 +283,22 @@ def showAddItem():
         return redirect('/')
 
 
-@app.route('/catalog/<string:category>/<string:item>/edit',
+@app.route('/catalog/<string:item>/edit',
            methods=['GET', 'POST'])
 @login_required
-def editItem(category, item):
+def editItem(item):
     if request.method == 'GET':
-        cat_objs = Category.query.filter_by(
-            name=category).first()
-        itm_objs = Item.query.filter(
-            Item.category_id == cat_objs.id, Item.name == item).first()
+        itm_objs = Item.query.filter(Item.name == item).first()
         cat_objs = Category.query.all()
+        # Generate a new CSRF token
+        app.jinja_env.globals['csrf_token'] = generate_csrf_token()
         return render_template(
             "item_edit.html",
             item=itm_objs,
             categories=cat_objs,
             loginSession=login_session)
     elif request.method == 'POST' and request.form['button'] == 'Save':
-        cat_objs = Category.query.filter_by(
-            name=category).first()
-        itm_objs = Item.query.filter(
-            Item.category_id == cat_objs.id, Item.name == item).first()
+        itm_objs = Item.query.filter(Item.name == item).first()
         itm_objs.name = request.form['name']
         itm_objs.description = request.form['description']
         file_name = fileHandler(request)
@@ -320,6 +319,8 @@ def deleteItem(item):
     if request.method == 'GET':
         itm_objs = Item.query.filter(
             Item.name == item).first()
+        # Generate a new CSRF token
+        app.jinja_env.globals['csrf_token'] = generate_csrf_token()
         return render_template(
             "item_delete.html",
             item=itm_objs,
@@ -664,6 +665,12 @@ def csrf_protect():
 
 def generate_csrf_token():
     if '_csrf_token' not in login_session:
+        print("no csrf token in login session, re-create ..")
+        login_session['_csrf_token'] = ''.join(
+            random.choice(
+                string.ascii_uppercase + string.digits) for x in xrange(32))
+    elif '_csrf_token' not in app.jinja_env.globals:
+        print("no csrf token in jinja_env, re-create ..")
         login_session['_csrf_token'] = ''.join(
             random.choice(
                 string.ascii_uppercase + string.digits) for x in xrange(32))
